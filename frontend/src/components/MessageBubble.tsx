@@ -1,3 +1,6 @@
+import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
+
 interface Props {
   role: 'user' | 'assistant'
   content: string
@@ -28,10 +31,10 @@ export default function MessageBubble({ role, content, streaming }: Props) {
     )
   }
 
-  // Assistant — card matching user style
   return (
     <div style={{ marginBottom: '2rem' }}>
       <div
+        className="prose-dark"
         style={{
           background: '#1a1a1a',
           color: 'var(--foreground)',
@@ -42,11 +45,10 @@ export default function MessageBubble({ role, content, streaming }: Props) {
           fontWeight: 400,
           letterSpacing: '0.005em',
           border: '1px solid var(--green)',
-          whiteSpace: 'pre-wrap',
           wordBreak: 'break-word',
         }}
       >
-        {content}
+        <ReactMarkdown remarkPlugins={[remarkGfm]}>{content}</ReactMarkdown>
         {streaming && <span className="cursor-blink" />}
       </div>
     </div>
