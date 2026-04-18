@@ -119,3 +119,96 @@
 
 /* Scrollbar */
 ::-webkit-scrollbar { width: 0px; }
+
+/* Markdown prose styles for assistant chat bubbles */
+.prose-dark p { margin-bottom: 0.75rem; }
+.prose-dark p:last-child { margin-bottom: 0; }
+
+.prose-dark strong { font-weight: 600; color: #f0f0f0; }
+.prose-dark em { font-style: italic; }
+
+.prose-dark code {
+  font-family: 'JetBrains Mono', 'Fira Code', ui-monospace, monospace;
+  background: #111;
+  border: 1px solid #2a2a2a;
+  border-radius: 3px;
+  padding: 0.1em 0.35em;
+  font-size: 0.875em;
+  color: var(--green);
+}
+
+.prose-dark pre {
+  background: #111;
+  border: 1px solid #2a2a2a;
+  border-radius: 4px;
+  padding: 0.75rem 1rem;
+  margin: 0.75rem 0;
+  overflow-x: auto;
+}
+.prose-dark pre code {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 0.8em;
+  color: #d4d4d4;
+}
+
+.prose-dark ul,
+.prose-dark ol {
+  margin: 0.5rem 0 0.75rem 1.25rem;
+}
+.prose-dark ul { list-style-type: disc; }
+.prose-dark ol { list-style-type: decimal; }
+.prose-dark li { margin-bottom: 0.25rem; }
+
+.prose-dark h1,
+.prose-dark h2,
+.prose-dark h3,
+.prose-dark h4 {
+  font-weight: 600;
+  color: #f0f0f0;
+  margin: 1rem 0 0.5rem;
+  line-height: 1.3;
+}
+.prose-dark h1 { font-size: 1.25em; }
+.prose-dark h2 { font-size: 1.1em; }
+.prose-dark h3 { font-size: 1em; }
+.prose-dark h4 { font-size: 0.95em; }
+
+.prose-dark a {
+  color: var(--green);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.prose-dark blockquote {
+  border-left: 2px solid #333;
+  padding-left: 0.75rem;
+  color: #888;
+  margin: 0.5rem 0;
+  font-style: italic;
+}
+
+.prose-dark table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0.75rem 0;
+  font-size: 0.875em;
+}
+.prose-dark th,
+.prose-dark td {
+  border: 1px solid #2a2a2a;
+  padding: 0.4rem 0.75rem;
+  text-align: left;
+}
+.prose-dark th {
+  background: #111;
+  font-weight: 600;
+  color: #f0f0f0;
+}
+
+.prose-dark hr {
+  border: none;
+  border-top: 1px solid #2a2a2a;
+  margin: 1rem 0;
+}
