@@ -42,7 +42,7 @@ export async function streamChat(
     const chunk = decoder.decode(value, { stream: true })
     for (const line of chunk.split('\n')) {
       if (!line.startsWith('data: ')) continue
-      const text = line.slice(6)
+      const text = line.slice(6).replace(/\\n/g, '\n')
       if (text === '[DONE]') {
         onDone()
         return

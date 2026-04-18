@@ -34,7 +34,9 @@ async def chat(body: ChatRequest, request: Request):
     async def generate():
         try:
             async for token in stream_chat(context, body.question):
-                yield f"data: {token}\n\n"
+                # Encode newlines so they don't break SSE line framing
+                encoded = token.replace('\n', '\\n')
+                yield f"data: {encoded}\n\n"
         except Exception:
             yield "data: [ERROR]\n\n"
         yield "data: [DONE]\n\n"
