@@ -1,5 +1,4 @@
 import { useEffect, useRef } from 'react'
-import { ScrollArea } from '@/components/ui/scroll-area'
 import MessageBubble from './MessageBubble'
 
 export interface Message {
@@ -15,14 +14,22 @@ interface Props {
 
 export default function ChatWindow({ messages }: Props) {
   const bottomRef = useRef<HTMLDivElement>(null)
+  const containerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
 
   return (
-    <ScrollArea className="flex-1 px-4 py-4">
-      <div className="space-y-4 max-w-2xl mx-auto">
+    <div
+      ref={containerRef}
+      style={{
+        flex: 1,
+        overflowY: 'auto',
+        padding: 'clamp(2rem, 5vw, 3.5rem) clamp(1.5rem, 8vw, 4rem)',
+      }}
+    >
+      <div style={{ maxWidth: '680px', margin: '0 auto' }}>
         {messages.map((msg) => (
           <MessageBubble
             key={msg.id}
@@ -33,6 +40,6 @@ export default function ChatWindow({ messages }: Props) {
         ))}
         <div ref={bottomRef} />
       </div>
-    </ScrollArea>
+    </div>
   )
 }
