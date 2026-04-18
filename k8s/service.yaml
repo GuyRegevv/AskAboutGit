@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: askaboutgit-frontend
+  namespace: askaboutgit
+spec:
+  selector:
+    app: askaboutgit-frontend
+  ports:
+    - port: 80
+      targetPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: askaboutgit-backend
+  namespace: askaboutgit
+spec:
+  selector:
+    app: askaboutgit-backend
+  ports:
+    - port: 8000
+      targetPort: 8000

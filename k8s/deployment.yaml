@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: askaboutgit-frontend
+  namespace: askaboutgit
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: askaboutgit-frontend
+  template:
+    metadata:
+      labels:
+        app: askaboutgit-frontend
+    spec:
+      containers:
+        - name: frontend
+          image: guyreg/askaboutgit-frontend:latest
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "50m"
+            limits:
+              memory: "128Mi"
+              cpu: "200m"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: askaboutgit-backend
+  namespace: askaboutgit
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: askaboutgit-backend
+  template:
+    metadata:
+      labels:
+        app: askaboutgit-backend
+    spec:
+      containers:
+        - name: backend
+          image: guyreg/askaboutgit-backend:latest
+          ports:
+            - containerPort: 8000
+          envFrom:
+            - configMapRef:
+                name: askaboutgit-config
+            - secretRef:
+                name: askaboutgit-secrets
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
