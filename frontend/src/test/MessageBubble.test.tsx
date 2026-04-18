@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react'
-import MessageBubble from './MessageBubble'
+import MessageBubble from '../components/MessageBubble'
 
 describe('MessageBubble — assistant markdown rendering', () => {
   test('renders bold markdown as <strong>, not raw asterisks', () => {
