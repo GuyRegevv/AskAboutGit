@@ -1,6 +1,7 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 @import "@fontsource-variable/geist";
+@import "@fontsource-variable/oxanium";
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -25,7 +26,7 @@
   --color-input: var(--input);
   --color-ring: var(--ring);
   --color-green: var(--green);
-  --font-sans: 'Geist Variable', sans-serif;
+  --font-sans: 'Oxanium Variable', sans-serif;
   --radius-lg: var(--radius);
   --radius-md: calc(var(--radius) - 2px);
   --radius-sm: calc(var(--radius) - 4px);
@@ -69,7 +70,7 @@
 
   body {
     @apply bg-background text-foreground;
-    font-family: 'Geist Variable', sans-serif;
+    font-family: 'Oxanium Variable', sans-serif;
   }
 
   /* Grain overlay */
@@ -121,8 +122,9 @@
 ::-webkit-scrollbar { width: 0px; }
 
 /* Markdown prose styles for assistant chat bubbles */
-.prose-dark p { margin-bottom: 0.75rem; }
+.prose-dark p { margin: 0 0 0.75rem; }
 .prose-dark p:last-child { margin-bottom: 0; }
+.prose-dark > *:first-child { margin-top: 0; }
 
 .prose-dark strong { font-weight: 600; color: #f0f0f0; }
 .prose-dark em { font-style: italic; }
