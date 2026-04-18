@@ -28,24 +28,27 @@ export default function MessageBubble({ role, content, streaming }: Props) {
     )
   }
 
-  // Assistant — no bubble, just text
+  // Assistant — card matching user style
   return (
-    <div style={{ marginBottom: '2.5rem' }}>
-      <p
+    <div style={{ marginBottom: '2rem' }}>
+      <div
         style={{
-          fontSize: 'clamp(0.95rem, 1.3vw, 1.05rem)',
-          lineHeight: 1.75,
+          background: '#1a1a1a',
           color: 'var(--foreground)',
+          borderRadius: '6px',
+          padding: '8px 14px',
+          fontSize: '13.5px',
+          lineHeight: 1.55,
           fontWeight: 400,
-          letterSpacing: '0.01em',
-          margin: 0,
+          letterSpacing: '0.005em',
+          border: '1px solid var(--green)',
           whiteSpace: 'pre-wrap',
           wordBreak: 'break-word',
         }}
       >
         {content}
         {streaming && <span className="cursor-blink" />}
-      </p>
+      </div>
     </div>
   )
 }
