@@ -4,7 +4,7 @@ metadata:
   name: askaboutgit-config
   namespace: askaboutgit
 data:
-  LLM_MODEL: "claude-haiku-4-5-20251001"
+  LLM_MODEL: "gpt-4o-mini"
   RATE_LIMIT_MAX_REQUESTS: "20"
   RATE_LIMIT_WINDOW_HOURS: "1"
   CONTEXT_CACHE_TTL_MINUTES: "30"
