@@ -1,9 +1,11 @@
-export async function loadRepo(owner: string, repo: string): Promise<void> {
+export async function loadRepo(owner: string, repo: string): Promise<string[]> {
   const res = await fetch(`/api/repo/${owner}/${repo}`)
   if (!res.ok) {
     const body = await res.json().catch(() => ({}))
     throw new Error(body.detail ?? `Failed to load repository (${res.status})`)
   }
+  const data = await res.json()
+  return data.files as string[]
 }
 
 export async function streamChat(

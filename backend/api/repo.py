@@ -10,12 +10,13 @@ router = APIRouter()
 async def load_repo(owner: str, repo: str):
     """
     Fetch the repo's file tree, select key files, fetch their contents,
-    and store in the context cache. Returns 200 if ready.
+    and store in the context cache. Returns 200 with file list if ready.
     """
     cache_key = f"{owner}/{repo}"
 
-    if state.context_cache.get(cache_key) is not None:
-        return {"owner": owner, "repo": repo, "status": "ready"}
+    context = state.context_cache.get(cache_key)
+    if context is not None:
+        return {"owner": owner, "repo": repo, "status": "ready", "files": list(context.keys())}
 
     client = GitHubClient()
     try:
@@ -34,4 +35,4 @@ async def load_repo(owner: str, repo: str):
         )
 
     state.context_cache.set(cache_key, contents)
-    return {"owner": owner, "repo": repo, "status": "ready"}
+    return {"owner": owner, "repo": repo, "status": "ready", "files": list(contents.keys())}
