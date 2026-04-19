@@ -30,6 +30,10 @@ export default function FilesModal({ files, onClose }: FilesModalProps) {
 
       {/* Panel */}
       <div
+        role="dialog"
+        aria-modal="true"
+        aria-label="Context files"
+        onClick={(e) => e.stopPropagation()}
         style={{
           position: 'fixed',
           top: '50%',
