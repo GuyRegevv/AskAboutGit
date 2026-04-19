@@ -9,14 +9,17 @@ export default function LandingPage() {
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    const match = url.trim().match(/github\.com\/([^/\s]+)\/([^/\s]+)/);
+    const trimmed = url.trim();
+    const fullUrlMatch = trimmed.match(/github\.com\/([^/\s]+)\/([^/\s]+)/);
+    const shortMatch = !fullUrlMatch && trimmed.match(/^([^/\s]+)\/([^/\s]+)$/);
+    const match = fullUrlMatch ?? shortMatch;
     if (!match) {
       setError(true);
       inputRef.current?.focus();
       return;
     }
     setError(false);
-    navigate(`/${match[1]}/${match[2]}`);
+    navigate(`/${match[1].toLowerCase()}/${match[2].toLowerCase()}`);
   }
 
   return (
