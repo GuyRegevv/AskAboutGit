@@ -40,6 +40,7 @@ async def run_indexing(
         yield ProgressEvent(phase="failed", message=str(e)[:200])
         return
 
+    yield ProgressEvent(phase="extracting")
     yield ProgressEvent(phase="selecting", total=len(files))
 
     yield ProgressEvent(phase="chunking", total=len(files))

@@ -43,6 +43,7 @@ async def test_pipeline_emits_phases_and_stores():
 
     phases = [e.phase for e in events]
     assert phases[0] == "downloading"
+    assert "extracting" in phases
     assert "chunking" in phases
     assert "embedding" in phases
     assert phases[-1] == "ready"
