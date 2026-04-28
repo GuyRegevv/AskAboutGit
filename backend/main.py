@@ -1,11 +1,13 @@
 import os
 from dotenv import load_dotenv
+
+load_dotenv()
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from api.repo import router as repo_router
 from api.chat import router as chat_router
-
-load_dotenv()
+from api import index as index_route
 
 app = FastAPI(title="AskAboutGit API")
 
@@ -21,6 +23,7 @@ app.add_middleware(
 
 app.include_router(repo_router, prefix="/api")
 app.include_router(chat_router, prefix="/api")
+app.include_router(index_route.router, prefix="/api")
 
 
 @app.get("/health")

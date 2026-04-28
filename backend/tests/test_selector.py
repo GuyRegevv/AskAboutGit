@@ -71,3 +71,17 @@ def test_entry_point_scored_high():
     idx_index = result.index("src/index.ts") if "src/index.ts" in result else 999
     idx_utils = result.index("src/utils.ts") if "src/utils.ts" in result else 999
     assert idx_index < idx_utils
+
+
+from selector.selector import should_skip_path
+
+
+def test_should_skip_path_skips_tests_and_locks():
+    assert should_skip_path("tests/test_foo.py") is True
+    assert should_skip_path("package-lock.json") is True
+    assert should_skip_path("node_modules/foo/index.js") is True
+
+
+def test_should_skip_path_keeps_source():
+    assert should_skip_path("src/main.py") is False
+    assert should_skip_path("README.md") is False

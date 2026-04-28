@@ -37,22 +37,34 @@ MANIFEST_FILES = {
 CONFIG_EXTENSIONS = {".yaml", ".yml", ".toml", ".ini", ".cfg", ".env.example"}
 
 
-def _score(path: str) -> int:
-    """Return priority score. Return -1 to skip the file."""
+def should_skip_path(path: str) -> bool:
+    """Return True if the path should be excluded from context (tests, locks, binaries, vendored dirs, etc.)."""
     p = Path(path)
     parts = p.parts
 
     if any(part in SKIP_DIRS for part in parts[:-1]):
-        return -1
+        return True
 
     name = p.name.lower()
 
     if name in LOCK_FILES:
-        return -1
+        return True
     if p.suffix.lower() in SKIP_EXTENSIONS:
-        return -1
+        return True
     if TEST_PATTERN.search(path):
+        return True
+
+    return False
+
+
+def _score(path: str) -> int:
+    """Return priority score. Return -1 to skip the file."""
+    if should_skip_path(path):
         return -1
+
+    p = Path(path)
+    parts = p.parts
+    name = p.name.lower()
 
     if name.startswith("readme"):
         return 100

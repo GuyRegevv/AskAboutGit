@@ -46,11 +46,17 @@ spec:
           image: guyreg/askaboutgit-backend:latest
           ports:
             - containerPort: 8000
+          env:
+            - name: CHROMA_PERSIST_DIR
+              value: /data/chroma
           envFrom:
             - configMapRef:
                 name: askaboutgit-config
             - secretRef:
                 name: askaboutgit-secrets
+          volumeMounts:
+            - name: chroma-data
+              mountPath: /data/chroma
           resources:
             requests:
               memory: "128Mi"
@@ -58,3 +64,7 @@ spec:
             limits:
               memory: "512Mi"
               cpu: "500m"
+      volumes:
+        - name: chroma-data
+          persistentVolumeClaim:
+            claimName: askaboutgit-chroma

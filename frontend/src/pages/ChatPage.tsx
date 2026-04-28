@@ -1,9 +1,11 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { loadRepo, streamChat } from '@/lib/api'
+import { loadRepo, streamChat, streamIndex } from '@/lib/api'
 import ChatWindow, { type Message } from '@/components/ChatWindow'
 import ChatInput from '@/components/ChatInput'
 import FilesModal from '@/components/FilesModal'
+import { DeepModeBanner } from '@/components/DeepModeBanner'
+import { applyEvent, initialDeepState, type DeepModeState } from '@/lib/deepMode'
 
 type PageState = 'loading' | 'ready' | 'error'
 
@@ -44,6 +46,9 @@ export default function ChatPage() {
   const [files, setFiles] = useState<string[]>([])
   const [showFiles, setShowFiles] = useState(false)
   const [retryCount, setRetryCount] = useState(0)
+  const [mode, setMode] = useState<'free' | 'deep'>('free')
+  const [deepState, setDeepState] = useState<DeepModeState>(initialDeepState)
+  const [retrievedFiles, setRetrievedFiles] = useState<string[]>([])
 
   useEffect(() => {
     if (!owner || !repo) {
@@ -72,6 +77,24 @@ export default function ChatPage() {
       })
   }, [owner, repo, navigate, retryCount])
 
+  const startIndexing = () => {
+    setDeepState({ kind: 'indexing', phase: 'downloading' })
+    void streamIndex(
+      owner!,
+      repo!,
+      ev => setDeepState(prev => applyEvent(prev, ev)),
+      () => setDeepState(prev => {
+        if (prev.kind === 'indexing') return { kind: 'ready' }
+        return prev
+      }),
+      msg => setDeepState({ kind: 'failed', message: msg }),
+    )
+  }
+
+  useEffect(() => {
+    if (deepState.kind === 'ready') setMode('deep')
+  }, [deepState])
+
   const handleSend = useCallback(
     (question: string) => {
       if (!owner || !repo || streaming) return
@@ -86,12 +109,14 @@ export default function ChatPage() {
       }
 
       setMessages((prev) => [...prev, userMsg, assistantMsg])
+      setRetrievedFiles([])
       setStreaming(true)
 
       streamChat(
         owner,
         repo,
         question,
+        mode,
         (token) => {
           setMessages((prev) =>
             prev.map((m) =>
@@ -113,9 +138,10 @@ export default function ChatPage() {
           )
           setStreaming(false)
         },
+        (files) => setRetrievedFiles(files),
       )
     },
-    [owner, repo, streaming],
+    [owner, repo, streaming, mode],
   )
 
   if (state === 'loading') {
@@ -267,8 +293,21 @@ export default function ChatPage() {
             onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--foreground)')}
             onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--muted-foreground)')}
           >
-            {files.length} files loaded
+            {deepState.kind === 'ready' ? `${files.length} files + full repo` : `${files.length} files loaded`}
           </button>
+
+          {deepState.kind === 'ready' && (
+            <span
+              style={{
+                fontSize: '11px',
+                color: 'var(--green)',
+                letterSpacing: '0.08em',
+                textTransform: 'uppercase',
+              }}
+            >
+              deep
+            </span>
+          )}
         </div>
 
         <button
@@ -290,11 +329,12 @@ export default function ChatPage() {
         </button>
       </header>
 
+      <DeepModeBanner state={deepState} onEnable={startIndexing} onRetry={startIndexing} />
       <ChatWindow messages={messages} />
       <ChatInput onSend={handleSend} disabled={streaming} />
 
       {showFiles && (
-        <FilesModal files={files} onClose={() => setShowFiles(false)} />
+        <FilesModal files={files} onClose={() => setShowFiles(false)} deepMode={deepState.kind === 'ready'} retrievedFiles={retrievedFiles} />
       )}
     </div>
   )
