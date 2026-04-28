@@ -10,6 +10,16 @@ describe('DeepModeBanner', () => {
     expect(onEnable).toHaveBeenCalledOnce()
   })
 
+  it('idle: shows explanation text', () => {
+    render(<DeepModeBanner state={{ kind: 'idle' }} onEnable={() => {}} onRetry={() => {}} />)
+    expect(screen.getByText(/index the full repo/i)).toBeInTheDocument()
+  })
+
+  it('ready: renders nothing', () => {
+    const { container } = render(<DeepModeBanner state={{ kind: 'ready' }} onEnable={() => {}} onRetry={() => {}} />)
+    expect(container.firstChild).toBeNull()
+  })
+
   it('indexing: shows phase and progress', () => {
     render(
       <DeepModeBanner
@@ -18,12 +28,7 @@ describe('DeepModeBanner', () => {
       />
     )
     expect(screen.getByText(/embedding/i)).toBeInTheDocument()
-    expect(screen.getByText(/30\s*\/\s*100/)).toBeInTheDocument()
-  })
-
-  it('ready: shows confirmation badge', () => {
-    render(<DeepModeBanner state={{ kind: 'ready' }} onEnable={() => {}} onRetry={() => {}} />)
-    expect(screen.getByText(/deep mode active/i)).toBeInTheDocument()
+    expect(screen.getByText(/30\/100/)).toBeInTheDocument()
   })
 
   it('too_large: shows counts', () => {

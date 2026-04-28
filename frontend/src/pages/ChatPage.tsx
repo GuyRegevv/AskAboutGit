@@ -48,6 +48,7 @@ export default function ChatPage() {
   const [retryCount, setRetryCount] = useState(0)
   const [mode, setMode] = useState<'free' | 'deep'>('free')
   const [deepState, setDeepState] = useState<DeepModeState>(initialDeepState)
+  const [retrievedFiles, setRetrievedFiles] = useState<string[]>([])
 
   useEffect(() => {
     if (!owner || !repo) {
@@ -108,6 +109,7 @@ export default function ChatPage() {
       }
 
       setMessages((prev) => [...prev, userMsg, assistantMsg])
+      setRetrievedFiles([])
       setStreaming(true)
 
       streamChat(
@@ -136,6 +138,7 @@ export default function ChatPage() {
           )
           setStreaming(false)
         },
+        (files) => setRetrievedFiles(files),
       )
     },
     [owner, repo, streaming, mode],
@@ -290,8 +293,21 @@ export default function ChatPage() {
             onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--foreground)')}
             onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--muted-foreground)')}
           >
-            {files.length} files loaded
+            {deepState.kind === 'ready' ? `${files.length} files + full repo` : `${files.length} files loaded`}
           </button>
+
+          {deepState.kind === 'ready' && (
+            <span
+              style={{
+                fontSize: '11px',
+                color: 'var(--green)',
+                letterSpacing: '0.08em',
+                textTransform: 'uppercase',
+              }}
+            >
+              deep
+            </span>
+          )}
         </div>
 
         <button
@@ -313,14 +329,12 @@ export default function ChatPage() {
         </button>
       </header>
 
-      <div style={{ padding: '0 clamp(1.5rem, 8vw, 4rem)', paddingTop: '12px' }}>
-        <DeepModeBanner state={deepState} onEnable={startIndexing} onRetry={startIndexing} />
-      </div>
+      <DeepModeBanner state={deepState} onEnable={startIndexing} onRetry={startIndexing} />
       <ChatWindow messages={messages} />
       <ChatInput onSend={handleSend} disabled={streaming} />
 
       {showFiles && (
-        <FilesModal files={files} onClose={() => setShowFiles(false)} />
+        <FilesModal files={files} onClose={() => setShowFiles(false)} deepMode={deepState.kind === 'ready'} retrievedFiles={retrievedFiles} />
       )}
     </div>
   )

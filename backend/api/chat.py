@@ -1,3 +1,4 @@
+import json
 from typing import Literal
 
 from fastapi import APIRouter, HTTPException, Request
@@ -19,7 +20,7 @@ class ChatRequest(BaseModel):
 
 async def _build_deep_context(
     owner: str, repo: str, question: str, base_context: dict[str, str]
-) -> dict[str, str]:
+) -> tuple[dict[str, str], list[str]]:
     age = state.chroma_store.collection_age_seconds(owner, repo)
     if age is None or age >= state.DEEP_MODE_TTL_SECONDS:
         raise HTTPException(
@@ -29,10 +30,12 @@ async def _build_deep_context(
     [q_emb] = await state.embedder.embed_batch([question])
     chunks = state.chroma_store.query(owner, repo, q_emb, k=state.DEEP_MODE_TOP_K)
     merged = dict(base_context)
+    retrieved_keys: list[str] = []
     for c in chunks:
         key = f"{c.file_path}:{c.start_line}-{c.end_line}"
         merged[key] = c.text
-    return merged
+        retrieved_keys.append(key)
+    return merged, retrieved_keys
 
 
 @router.post("/chat")
@@ -52,14 +55,17 @@ async def chat(body: ChatRequest, request: Request):
             detail="Repo context not found. Reload the page and try again.",
         )
 
+    retrieved_keys: list[str] = []
     if body.mode == "deep":
-        context = await _build_deep_context(
+        context, retrieved_keys = await _build_deep_context(
             body.owner, body.repo, body.question, base_context
         )
     else:
         context = base_context
 
     async def generate():
+        if retrieved_keys:
+            yield f"data: [META]{json.dumps({'files': retrieved_keys})}\n\n"
         try:
             async for token in stream_chat(context, body.question):
                 encoded = token.replace("\n", "\\n")

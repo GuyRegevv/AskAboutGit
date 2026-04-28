@@ -1,12 +1,13 @@
 import os
 from dotenv import load_dotenv
+
+load_dotenv()
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from api.repo import router as repo_router
 from api.chat import router as chat_router
 from api import index as index_route
-
-load_dotenv()
 
 app = FastAPI(title="AskAboutGit API")
 

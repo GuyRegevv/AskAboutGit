@@ -18,6 +18,7 @@ export async function streamChat(
   onToken: (token: string) => void,
   onDone: () => void,
   onError: (message: string) => void,
+  onFiles?: (files: string[]) => void,
 ): Promise<void> {
   let response: Response
   try {
@@ -43,10 +44,14 @@ export async function streamChat(
     const chunk = decoder.decode(value, { stream: true })
     for (const line of chunk.split('\n')) {
       if (!line.startsWith('data: ')) continue
-      const text = line.slice(6).replace(/\\n/g, '\n')
-      if (text === '[DONE]') { onDone(); return }
-      if (text === '[ERROR]') { onError('The AI encountered an error. Please try again.'); return }
-      onToken(text)
+      const raw = line.slice(6)
+      if (raw === '[DONE]') { onDone(); return }
+      if (raw === '[ERROR]') { onError('The AI encountered an error. Please try again.'); return }
+      if (raw.startsWith('[META]')) {
+        try { onFiles?.(JSON.parse(raw.slice(6)).files) } catch { /* ignore */ }
+        continue
+      }
+      onToken(raw.replace(/\\n/g, '\n'))
     }
   }
   onDone()

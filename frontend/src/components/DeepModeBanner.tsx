@@ -6,18 +6,48 @@ type Props = {
   onRetry: () => void
 }
 
+const barStyle: React.CSSProperties = {
+  borderBottom: '1px solid var(--border)',
+  padding: '8px clamp(1.5rem, 8vw, 4rem)',
+  display: 'flex',
+  alignItems: 'center',
+}
+
+const labelStyle: React.CSSProperties = {
+  fontSize: '11px',
+  letterSpacing: '0.05em',
+  color: 'var(--muted-foreground)',
+}
+
+const btnStyle: React.CSSProperties = {
+  fontSize: '11px',
+  color: 'var(--muted-foreground)',
+  background: 'none',
+  border: '1px solid var(--border)',
+  borderRadius: '4px',
+  padding: '2px 8px',
+  cursor: 'pointer',
+  fontFamily: 'inherit',
+  letterSpacing: '0.05em',
+  flexShrink: 0,
+}
+
 export function DeepModeBanner({ state, onEnable, onRetry }: Props) {
+  if (state.kind === 'ready') return null
+
   if (state.kind === 'idle') {
     return (
-      <div className="rounded-md border border-zinc-700 bg-zinc-900/50 px-4 py-3 text-sm flex items-center justify-between">
-        <span className="text-zinc-300">
-          Want answers backed by the full repo? Enable Deep mode to index every file.
+      <div style={{ ...barStyle, justifyContent: 'flex-end', gap: '12px' }}>
+        <span style={labelStyle}>
+          Index the full repo for deeper, retrieval-backed answers.
         </span>
         <button
           onClick={onEnable}
-          className="ml-4 rounded bg-amber-500 px-3 py-1 text-zinc-900 font-medium hover:bg-amber-400"
+          style={btnStyle}
+          onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--foreground)')}
+          onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--muted-foreground)')}
         >
-          Enable Deep mode
+          Enable deep mode
         </button>
       </div>
     )
@@ -29,46 +59,67 @@ export function DeepModeBanner({ state, onEnable, onRetry }: Props) {
         ? Math.round((state.progress.current / state.progress.total) * 100)
         : null
     return (
-      <div className="rounded-md border border-amber-700/40 bg-amber-950/30 px-4 py-3 text-sm">
-        <div className="flex items-center justify-between text-zinc-200">
-          <span className="capitalize">{state.phase}…</span>
-          {state.progress && (
-            <span className="font-mono text-xs text-zinc-400">
-              {state.progress.current} / {state.progress.total}
-            </span>
+      <div style={{ ...barStyle, gap: '12px' }}>
+        <span
+          style={{
+            ...labelStyle,
+            textTransform: 'uppercase',
+            letterSpacing: '0.08em',
+            flexShrink: 0,
+          }}
+        >
+          {state.phase}
+        </span>
+        <div
+          style={{
+            flex: 1,
+            height: '1px',
+            background: 'var(--border)',
+            borderRadius: '1px',
+            overflow: 'hidden',
+          }}
+        >
+          {pct !== null && (
+            <div
+              style={{
+                height: '100%',
+                width: `${pct}%`,
+                background: 'var(--green)',
+                transition: 'width 0.3s ease',
+              }}
+            />
           )}
         </div>
-        {pct !== null && (
-          <div className="mt-2 h-1 w-full rounded bg-zinc-800 overflow-hidden">
-            <div className="h-full bg-amber-500" style={{ width: `${pct}%` }} />
-          </div>
+        {state.progress && (
+          <span style={{ ...labelStyle, fontFamily: 'monospace', flexShrink: 0 }}>
+            {state.progress.current}/{state.progress.total}
+          </span>
         )}
-      </div>
-    )
-  }
-
-  if (state.kind === 'ready') {
-    return (
-      <div className="rounded-md border border-emerald-700/40 bg-emerald-950/30 px-4 py-2 text-sm text-emerald-200">
-        Deep mode active — answers use full repo context.
       </div>
     )
   }
 
   if (state.kind === 'too_large') {
     return (
-      <div className="rounded-md border border-zinc-700 bg-zinc-900/50 px-4 py-3 text-sm text-zinc-300">
-        This repo has {state.count} source files. Deep mode is capped at {state.limit}. Standard chat is still available.
+      <div style={barStyle}>
+        <span style={labelStyle}>
+          Repo has {state.count} files — deep mode cap is {state.limit}. Standard chat still works.
+        </span>
       </div>
     )
   }
 
+  // failed
   return (
-    <div className="rounded-md border border-rose-700/40 bg-rose-950/30 px-4 py-3 text-sm flex items-center justify-between">
-      <span className="text-rose-200">Indexing failed: {state.message}</span>
+    <div style={{ ...barStyle, justifyContent: 'space-between' }}>
+      <span style={{ ...labelStyle, color: '#ef4444' }}>
+        Indexing failed: {state.message}
+      </span>
       <button
         onClick={onRetry}
-        className="ml-4 rounded bg-rose-500 px-3 py-1 text-zinc-900 font-medium hover:bg-rose-400"
+        style={{ ...btnStyle, marginLeft: '12px' }}
+        onMouseEnter={(e) => (e.currentTarget.style.color = 'var(--foreground)')}
+        onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--muted-foreground)')}
       >
         Retry
       </button>
